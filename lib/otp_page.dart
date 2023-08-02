@@ -1,56 +1,89 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'home_page.dart';
 
-class OTPPage extends StatelessWidget {
-  final TextEditingController _otpController = TextEditingController();
+class OTPPage extends StatefulWidget {
+  final String verificationId;
+  final String phoneNumber;
 
-  Future<void> _verifyOTP(BuildContext context, String verificationId) async {
-    FirebaseAuth _auth = FirebaseAuth.instance;
+  OTPPage(this.verificationId, this.phoneNumber);
 
-    String smsCode = _otpController.text.trim();
+  @override
+  _OTPPageState createState() => _OTPPageState();
+}
 
-    PhoneAuthCredential credential = PhoneAuthProvider.credential(
-      verificationId: verificationId,
-      smsCode: smsCode,
-    );
+class _OTPPageState extends State<OTPPage> {
+  final _otpController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  bool _loading = false;
 
-    try {
-      await _auth.signInWithCredential(credential);
-      // OTP verification successful, navigate to the home page.
-      Navigator.pushReplacementNamed(context, '/home');
-    } on FirebaseAuthException catch (e) {
-      // Handle verification failure.
-      print(e.message);
+  void _validateAndSubmit() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _loading = true;
+      });
+
+      String smsCode = _otpController.text.trim();
+      PhoneAuthCredential credential = PhoneAuthProvider.credential(
+        verificationId: widget.verificationId,
+        smsCode: smsCode,
+      );
+
+      try {
+        await FirebaseAuth.instance.signInWithCredential(credential);
+        Fluttertoast.showToast(msg: 'OTP is correct!');
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePage(),
+          ),
+        );
+      } on FirebaseAuthException catch (e) {
+        Fluttertoast.showToast(msg: 'Incorrect OTP. Try again!');
+        print('Error: ${e.message}');
+      }
+
+      setState(() {
+        _loading = false;
+      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, dynamic> args =
-        ModalRoute.of(context)!.settings.arguments as Map<String, dynamic>;
-    final String verificationId = args['verificationId'];
-
     return Scaffold(
-      appBar: AppBar(
-        title: Text('OTP Verification'),
-      ),
+      appBar: AppBar(title: Text('OTP Verification')),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: TextField(
-                controller: _otpController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(labelText: 'OTP'),
-              ),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                PinCodeTextField(
+                  appContext: context,
+                  length: 6,
+                  onChanged: (otp) {},
+                  controller: _otpController,
+                  pinTheme: PinTheme(
+                    shape: PinCodeFieldShape.box,
+                    borderRadius: BorderRadius.circular(5),
+                    borderWidth: 2,
+                    inactiveFillColor: Colors.grey.shade200,
+                  ),
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _loading ? null : _validateAndSubmit,
+                  child:
+                      _loading ? CircularProgressIndicator() : Text('Verify'),
+                ),
+              ],
             ),
-            ElevatedButton(
-              onPressed: () => _verifyOTP(context, verificationId),
-              child: Text('Verify OTP'),
-            ),
-          ],
+          ),
         ),
       ),
     );
