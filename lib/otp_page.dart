@@ -33,7 +33,14 @@ class _OTPPageState extends State<OTPPage> {
 
       try {
         await FirebaseAuth.instance.signInWithCredential(credential);
-        Fluttertoast.showToast(msg: 'OTP is correct!');
+        Fluttertoast.showToast(
+          msg: 'OTP is correct!',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          backgroundColor: Colors.grey,
+          textColor: Colors.black,
+          fontSize: 16.0,
+        );
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -41,7 +48,14 @@ class _OTPPageState extends State<OTPPage> {
           ),
         );
       } on FirebaseAuthException catch (e) {
-        Fluttertoast.showToast(msg: 'Incorrect OTP. Try again!');
+        Fluttertoast.showToast(
+          msg: 'Incorrect OTP. Try again!',
+          toastLength: Toast.LENGTH_LONG,
+          gravity: ToastGravity.TOP,
+          backgroundColor: Colors.grey,
+          textColor: Colors.black,
+          fontSize: 16.0,
+        );
         print('Error: ${e.message}');
       }
 
