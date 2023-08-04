@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'otp_page.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginScreen extends StatefulWidget {
   @override
-  _LoginPageState createState() => _LoginPageState();
+  _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginScreenState extends State<LoginScreen> {
   final _phoneNumberController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _loading = false;
@@ -31,7 +31,7 @@ class _LoginPageState extends State<LoginPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => OTPPage(verificationId, phoneNumber),
+              builder: (context) => OTPScreen(verificationId, phoneNumber),
             ),
           );
         },
@@ -56,6 +56,11 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                SizedBox(
+                  height: 280,
+                  child: Image.asset('assets/mobile_login.png'),
+                ),
+                const Padding(padding: EdgeInsets.all(20.0)),
                 TextFormField(
                   maxLength: 10,
                   controller: _phoneNumberController,

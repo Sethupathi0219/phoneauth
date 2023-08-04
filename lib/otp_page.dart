@@ -4,17 +4,17 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'home_page.dart';
 
-class OTPPage extends StatefulWidget {
+class OTPScreen extends StatefulWidget {
   final String verificationId;
   final String phoneNumber;
 
-  OTPPage(this.verificationId, this.phoneNumber);
+  OTPScreen(this.verificationId, this.phoneNumber);
 
   @override
-  _OTPPageState createState() => _OTPPageState();
+  _OTPScreenState createState() => _OTPScreenState();
 }
 
-class _OTPPageState extends State<OTPPage> {
+class _OTPScreenState extends State<OTPScreen> {
   final _otpController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _loading = false;
@@ -44,7 +44,7 @@ class _OTPPageState extends State<OTPPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => HomePage(),
+            builder: (context) => HomeScreen(),
           ),
         );
       } on FirebaseAuthException catch (e) {
@@ -77,6 +77,11 @@ class _OTPPageState extends State<OTPPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                SizedBox(
+                  height: 280,
+                  child: Image.asset('assets/mobile_otp.png'),
+                ),
+                const Padding(padding: EdgeInsets.all(20.0)),
                 PinCodeTextField(
                   appContext: context,
                   length: 6,

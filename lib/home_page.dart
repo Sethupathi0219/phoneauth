@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
-class HomePage extends StatelessWidget {
+class HomeScreen extends StatelessWidget {
   void _signOut(BuildContext context) async {
     await FirebaseAuth.instance.signOut();
     Navigator.pop(context);
